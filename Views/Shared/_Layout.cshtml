@@ -1,0 +1,141 @@
+﻿@{
+    User CURRENT_USER = CurrentUser.getCurrentUser();
+}
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - MovNotifier</title>
+    <link rel="stylesheet" type="text/css" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="~/css/style.css">
+    <link rel="stylesheet" type="text/css" href="~/css/details.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    @*<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>*@
+    <script src="https://kit.fontawesome.com/c8e4d183c2.js" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: poppins;
+        }
+
+
+        .search-message-empty-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 4.5em;
+        }
+
+        .search-message-empty-decal {
+            margin-right: 2rem;
+            font-size: 6rem;
+            transform: rotate(90deg);
+        }
+
+        .search-message-empty-message {
+            font-size: 1.5em;
+            text-rendering: optimizeLegibility;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    @*<header>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MovNotifier</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Admin"> Admin </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>*@
+    <!--navigation-------------->
+    <nav>
+        <!--logo--------------->
+        <!--menu--btn----------------->
+        <input type="checkbox" class="menu-btn" id="menu-btn" />
+        <label class="menu-icon" for="menu-btn">
+            <span class="nav-icon"></span>
+        </label>
+        <!--menu-------------->
+        <ul class="menu">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Movies</a></li>
+            <li><a href="#">TV Shows</a></li>
+            <li><a href="#">Hollywood</a></li>
+            <li><a href="#">Horror</a></li>
+
+            @if (CURRENT_USER != null)
+            {
+                @if (CURRENT_USER.Role == "ADMIN")
+                {
+
+                    <li>
+                        <a asp-controller="Home" asp-action="Admin"> Admin </a>
+                    </li>
+                }
+                <li style="float:right"><a href="#">@CURRENT_USER.Email</a></li>
+                <li  style="float:right"><a asp-controller="Account" asp-action="GoogleLogout" >Logout</a></li>
+            }
+            else
+            {
+                <li>
+                    <a asp-controller="Home" asp-action="Registration"> Log In </a>
+                </li>
+            }
+        </ul>
+        <!--search------------->
+        <div class="search">
+            <form asp-controller="Home" asp-action="Index" method="post">
+                <input type="text" id="searchTitle" name="search" placeholder="Find Your Favourtie Movies">
+                <!--search-icon----------->
+
+            </form>
+        </div>
+    </nav>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer>
+        <p>Going To Internet, Ltd Consumer Website</p>
+        <p>Copyright 2020 - GoingToInternet</p>
+    </footer>
+
+
+
+    <script>
+        $("#searchTitle").autocomplete({
+        source: '@Url.Action("SearchMovie", "Home")'
+    });
+    </script>
+
+    @*<script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
+
+
+</body>
+</html>

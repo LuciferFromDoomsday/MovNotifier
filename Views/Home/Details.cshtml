@@ -1,0 +1,105 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+    Layout = "_Layout";
+
+}
+@using OMDbApiNet.Model;
+@model dynamic
+<div class="movie-card" style=" background-color: #141414">
+
+    <div class="container">
+
+
+        <style>
+        .hero:before {
+            background: url("@Model.Movie.Poster");
+        }
+        </style>
+        <div class="hero">
+
+            <div class="details">
+
+     
+
+
+
+
+            </div> <!-- end details -->
+
+        </div> <!-- end hero -->
+
+        <div class="description">
+
+            <div class="column1" style="padding-bottom :50px"> 
+                <h3>Genres :</h3>
+                @foreach (Genre genre in Model.Genres)
+                {
+                    <span class="tag">
+                        @Html.DisplayFor(modelItem => genre.Name)
+                    </span>
+
+                }
+
+            </div> <!-- end column1 -->
+
+            <div class="column2">
+                <h3> @Model.Movie.Title </h3>
+                @if (@Model.Movie.AvgRating < 5)
+                {
+                    <span style="color:darkred">Avarage Rating :  @Model.Movie.AvgRating  </span>
+                }
+                else if (@Model.Movie.AvgRating > 5 && @Model.Movie.AvgRating < 8)
+                {
+                    <span style="color:yellow">Avarage Rating :  @Model.Movie.AvgRating  </span>
+                }
+                else
+                {
+                    <span style="color:green">Avarage Rating : @Model.Movie.AvgRating  </span>
+                }
+                @if (@Model.Movie.Description.Length < 60)
+                {
+                    <p>@Model.Movie.Description.Substring(0, @Model.Movie.Description.Length) ...</p>
+                }
+                else if (@Model.Movie.Description.Length > 60 && @Model.Movie.Description.Length < 200)
+                {
+                    <p>@Model.Movie.Description.Substring(0, @Model.Movie.Description.Length / 2) ...</p>
+                }
+                else if (@Model.Movie.Description.Length > 200 && @Model.Movie.Description.Length < 400)
+                {
+                    <p>@Model.Movie.Description.Substring(0, @Model.Movie.Description.Length / 3) ...</p>
+                }
+                else
+                {
+                    <p>@Model.Movie.Description.Substring(0, @Model.Movie.Description.Length / 5) ...</p>
+                }
+
+
+
+
+
+
+            </div> <!-- end column2 -->
+            <div class="column3" style="float:right; margin-right: 50px">
+                <div class="avatars">
+                    <h3> Actors :</h3>
+                    @foreach (Actor actor in Model.Actors)
+                    {
+                <p>
+                    @Html.DisplayFor(modelItem => actor.name)
+                </p>
+
+                    }
+
+                </div> <!-- end avatars -->
+            </div>
+        </div> <!-- end description -->
+
+
+    </div> <!-- end container -->
+</div> <!-- end movie-card -->
+
+<br>
+<br>
+<br>
+<br>

@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewData["AdminTitle"] = "Movies";
+    Layout = "_LayoutAdmin";
+}
+@model MovNotifier.Models.Genre
+    <div class="wrapper" style="margin-top: 20px; ">
+
+        <div class="row">
+            <div style="padding: 30px;">
+                <form asp-controller="Home" asp-action="UpdateGenre">
+
+                    <div class="form-group ">
+                        <label class="control-label requiredField" for="name">
+                            Task
+                            <span class="asteriskField">
+                                *
+                            </span>
+                        </label>
+                        <div class="input-group">
+
+                            <input class="form-control" id="name" name="Name" type="text" value="@Model.Name" />
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input type="hidden" name="Id" value="@Model.Id" />
+                            <button class="btn btn-primary " name="submit" type="submit">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>

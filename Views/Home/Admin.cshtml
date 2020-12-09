@@ -1,0 +1,234 @@
+﻿@{
+    ViewData["AdminTitle"] = "Movies";
+    Layout = "_LayoutAdmin";
+}
+@model dynamic
+<div class="wrapper" style="margin-top: 20px; ">
+
+    <div class="row">
+        <div style="padding: 30px;">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTask">+ ADD Movie</button>
+            <!-- The Modal -->
+            <div class="modal fade" id="addTask">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content " style="width: 1000px;">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title"> Adding Movie </h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <form method="post" asp-controller="Home" asp-action="CreateMovie">
+                                            <div class="form-group ">
+                                                <label class="control-label requiredField" for="Title">
+                                                    Title
+                                                    <span class="asteriskField">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input class="form-control" id="Title" name="Title" type="text" />
+                                            </div>
+                                            <div class="form-group ">
+                                                <label class="control-label requiredField" for="Runtime">
+                                                    Runtime
+                                                    <span class="asteriskField">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input class="form-control" id="Runtime" name="Runtime" type="text" />
+                                            </div>
+                                            <div class="form-group ">
+                                                <label class="control-label requiredField" for="Director">
+                                                    Select a Director
+                                                    <span class="asteriskField">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <select class="select form-control" id="Directors" name="Directors">
+                                                    @foreach (Director c in Model.Directors)
+                                                    {
+                                                        <option value="@c.Id">
+                                                            @Html.DisplayFor(modelItem => c.name)
+                                                        </option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="form-group ">
+                                                <label class="control-label requiredField" for="Country">
+                                                    Select a Made Country
+                                                    <span class="asteriskField">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <select class="select form-control" id="Country" name="Country">
+                                                    @foreach (Country c in Model.Countries)
+                                                    {
+                                                        <option value="@c.ID">
+                                                            @Html.DisplayFor(modelItem => c.name)
+                                                        </option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="form-group ">
+                                                <label class="control-label requiredField" for="Poster">
+                                                    Poster URL
+                                                    <span class="asteriskField">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input class="form-control" id="Poster" name="Poster" type="text" />
+                                            </div>
+                                            <div class="form-group ">
+                                                <label class="control-label requiredField" for="ReleasDate">
+                                                    Release Date
+                                                    <span class="asteriskField">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input class="form-control" id="ReleasDate" name="ReleasDate" placeholder="MM/DD/YYYY" type="text" />
+                                            </div>
+                                            <div class="form-group ">
+                                                <label class="control-label requiredField" for="AvgRating">
+                                                    Average Rating
+                                                    <span class="asteriskField">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input class="form-control" id="AvgRating" name="AvgRating" type="text" />
+                                            </div>
+                                            <div class="form-group ">
+                                                <label class="control-label requiredField" for="textarea">
+                                                    Movie Description
+                                                    <span class="asteriskField">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <textarea class="form-control" cols="40" id="textarea" name="Description" placeholder="Description" rows="10"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <div>
+                                                    <button class="btn btn-primary " name="submit" type="submit">
+                                                        Submit
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+
+
+        </div>
+        <div class="col-8 col-m-12 col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>
+                        All Movies
+                    </h3>
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+                <div class="card-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Title</th>
+                                <th>Director</th>
+                                <th> Runtime </th>
+                                <th>Releas date</th>
+                                @*<th>Actors</th>
+                                    <th>Genres</th>*@
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (Movie item in Model.Movies)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Directors.name)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Runtime)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ReleasDate)</td>
+                                    @*<td>
+                                            @foreach (var actor in item.Actors.ToList())
+                                            {
+                                                @Html.DisplayFor(modelItem => actor.Actor.name)
+                                            }
+                                        </td>
+                                        <td>
+                                            @foreach (var genre in item.Genres.ToList())
+                                            {
+                                                @Html.DisplayFor(modelItem => genre.Genre.Name)
+                                            }
+                                        </td>*@
+                                    <td><a href="/Home/UpdateMoviePage/@item.Id">Update</a> | <a href="" onclick="Delete('@item.Id')">Delete</a></td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<!-- DataTables -->
+<script src="~/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<!-- page script -->
+<script>
+    $(function () {
+        $('#example1').DataTable();
+    });
+    function Delete(id){
+        var txt;
+        var r = confirm("Are you sure you want to Delete?");
+        if (r == true) {
+
+            $.ajax(
+            {
+                type: "POST",
+                url: '@Url.Action("DeleteMovie", "Home")',
+                data: {
+                    id: id
+                },
+                error: function (result) {
+                    alert("error");
+                },
+                success: function (result) {
+                    if (result == true) {
+                        var baseUrl="/Home/Movies";
+                        window.location.reload();
+                    }
+                    else {
+                        alert("There is a problem, Try Later!");
+                    }
+                }
+            });
+        }
+    }
+</script>
