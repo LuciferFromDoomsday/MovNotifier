@@ -75,7 +75,9 @@ namespace MovNotifier.Controllers
             Console.WriteLine(IMDBID);
          Item i =  api.GetMovieById(IMDBID);
 
-            Console.WriteLine(_context.Actors.Where(s => s.Id == 7).First().name);
+           
+
+
 
             try
             {
@@ -126,9 +128,23 @@ namespace MovNotifier.Controllers
                     }
                 }
                 myModel.Actors = actors;
+                try
+                {
 
-         
+                    Console.WriteLine(m.Country.name);
+                }
+                catch
+                {
 
+                }
+                try
+                {
+                    Console.WriteLine(m.Directors.name);
+                }
+                catch
+                {
+
+                }
 
                 //try
                 //{
@@ -484,7 +500,7 @@ namespace MovNotifier.Controllers
         }
         public ActionResult Admin()
         {
-
+            var errMsg = TempData["ErrorMessage"] as string;
             dynamic myModel = new ExpandoObject();
             myModel.Movies = _context.Movies.ToList();
             myModel.Genres = _context.Genres.ToList();
@@ -492,6 +508,7 @@ namespace MovNotifier.Controllers
             myModel.Languages = _context.Languages.ToList();
             myModel.Directors = _context.Directors.ToList();
             myModel.Countries = _context.Countries.ToList();
+            myModel.ErrorMessage = errMsg;
 
 
 ;            return View(myModel);
@@ -501,17 +518,25 @@ namespace MovNotifier.Controllers
         public ActionResult CreateMovie(Movie movie , String Directors , String Country)
         {
 
-            Director d = _context.Directors.Where(s => s.Id == int.Parse(Directors)).First();
+            if (ModelState.IsValid)
+            {
 
-            movie.Directors = d;
+                Director d = _context.Directors.Where(s => s.Id == int.Parse(Directors)).First();
 
-            Country c = _context.Countries.Where(s => s.ID == int.Parse(Country)).First();
+                movie.Directors = d;
 
-            movie.Country = c;
+                Country c = _context.Countries.Where(s => s.ID == int.Parse(Country)).First();
+
+                movie.Country = c;
 
 
-            _context.Movies.Add(movie);
-            _context.SaveChanges();
+                _context.Movies.Add(movie);
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Your movie didn't pass the validation!!";
+            }
             return RedirectToAction("Admin", "Home");
 
         }
@@ -520,9 +545,7 @@ namespace MovNotifier.Controllers
             Movie m = _context.Movies.Where(s => s.Id == id).First();
           
 
-           
-
-
+          
             dynamic myModel = new ExpandoObject();
             myModel.Id = id;
             myModel.CurrentMovie = m;
@@ -548,7 +571,7 @@ namespace MovNotifier.Controllers
                 countries.Insert(0, m.Country);
             }
             myModel.Countries = countries;
-
+            
             return View(myModel);
         }
 
@@ -556,19 +579,27 @@ namespace MovNotifier.Controllers
         [HttpPost]
         public ActionResult UpdateMovie(Movie movie , String Directors, String Country , String Id)
         {
+            if (ModelState.IsValid)
+            {
+                Movie m = _context.Movies.Where(s => s.Id == Int32.Parse(Id)).First();
+                m.Title = movie.Title;
+                m.Runtime = movie.Runtime;
+                m.ReleasDate = movie.ReleasDate;
+                m.Poster = movie.Poster;
+                m.AvgRating = movie.AvgRating;
+                m.Description = movie.Description;
+                m.Directors = _context.Directors.Where(s => s.Id == int.Parse(Directors)).First();
+                m.Country = _context.Countries.Where(s => s.ID == int.Parse(Country)).First(); ;
 
-            Movie m = _context.Movies.Where(s => s.Id == Int32.Parse(Id)).First();
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Not Updated ! Movie didn't pass the validation!!";
+            }
+            
 
-            m.Title = movie.Title;
-            m.Runtime = movie.Runtime;
-            m.ReleasDate = movie.ReleasDate;
-            m.Poster = movie.Poster;
-            m.AvgRating = movie.AvgRating;
-            m.Description = movie.Description;
-            m.Directors = _context.Directors.Where(s => s.Id == int.Parse(Directors)).First();
-            m.Country = _context.Countries.Where(s => s.ID == int.Parse(Country)).First(); ;
-
-            _context.SaveChanges();
+          
             return RedirectToAction("Admin", "Home");
 
 
@@ -598,22 +629,36 @@ namespace MovNotifier.Controllers
 
         public ActionResult Genres()
         {
-
-            return View(_context.Genres.ToList());
+            var errMsg = TempData["ErrorMessage"] as string;
+            dynamic myModel = new ExpandoObject();
+            myModel.Genres = _context.Genres.ToList();
+            myModel.ErrorMessage = errMsg;
+            return View(myModel);
+  
         }
         public ActionResult Language()
         {
-
-            return View(_context.Languages.ToList());
+            var errMsg = TempData["ErrorMessage"] as string;
+            dynamic myModel = new ExpandoObject();
+            myModel.Languages = _context.Languages.ToList();
+            myModel.ErrorMessage = errMsg;
+            return View(myModel);
         }
-
+         
 
         [HttpPost]
         public ActionResult CreateLanguage(Language language)
         {
+            if (ModelState.IsValid)
+            {
+                _context.Languages.Add(language);
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Your Language didn't pass the validation!!";
+            }
 
-            _context.Languages.Add(language);
-            _context.SaveChanges();
             return RedirectToAction("Language", "Home");
 
         }
@@ -629,10 +674,18 @@ namespace MovNotifier.Controllers
         [HttpPost]
         public ActionResult UpdateLanguage(Language language)
         {
-            Language d = _context.Languages.Where(s => s.Id == language.Id).First();
-            d.name = language.name;
+            if (ModelState.IsValid)
+            {
+                Language d = _context.Languages.Where(s => s.Id == language.Id).First();
+                d.name = language.name;
 
-            _context.SaveChanges();
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Not Updated ! Language didn't pass the validation!!";
+            }
+         
             return RedirectToAction("Language", "Home");
         }
 
@@ -659,8 +712,18 @@ namespace MovNotifier.Controllers
         [HttpPost]
         public ActionResult CreateGenre(Genre genre)
         {
-            _context.Genres.Add(genre);
-            _context.SaveChanges();
+           
+          
+            if (ModelState.IsValid)
+            {
+                ViewData["Message"] = "Success !";
+                _context.Genres.Add(genre);
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Your Genre didn't pass the validation!!";
+            }
             return RedirectToAction("Genres", "Home");
         }
 
@@ -674,10 +737,20 @@ namespace MovNotifier.Controllers
         [HttpPost]
         public ActionResult UpdateGenre(Genre genre)
         {
-            Genre d = _context.Genres.Where(s => s.Id == genre.Id).First();
-            d.Name = genre.Name;
-       
-            _context.SaveChanges();
+
+
+            if (ModelState.IsValid)
+            {
+                Genre d = _context.Genres.Where(s => s.Id == genre.Id).First();
+                d.Name = genre.Name;
+
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Not Updated ! Genre didn't pass the validation!!";
+            }
+         
             return RedirectToAction("Genres", "Home");
         }
 
@@ -700,8 +773,13 @@ namespace MovNotifier.Controllers
 
         public ActionResult Countries()
         {
+            var errMsg = TempData["ErrorMessage"] as string;
+            dynamic myModel = new ExpandoObject();
+            myModel.Countries = _context.Countries.ToList();
+            myModel.ErrorMessage = errMsg;
+            return View(myModel);
 
-            return View(_context.Countries.ToList());
+            
         }
     
 
@@ -709,9 +787,16 @@ namespace MovNotifier.Controllers
         [HttpPost]
         public ActionResult CreateCountry(Country country)
         {
-
-            _context.Countries.Add(country);
-            _context.SaveChanges();
+            if (ModelState.IsValid)
+            {
+                _context.Countries.Add(country);
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Your Country didn't pass the validation!!";
+            }
+          
             return RedirectToAction("Countries", "Home");
 
         }
@@ -727,10 +812,20 @@ namespace MovNotifier.Controllers
         [HttpPost]
         public ActionResult UpdateCountry(Country country)
         {
-            Country d = _context.Countries.Where(s => s.ID == country.ID).First();
-            d.name = country.name;
 
-            _context.SaveChanges();
+            if (ModelState.IsValid)
+            {
+                Country d = _context.Countries.Where(s => s.ID == country.ID).First();
+                d.name = country.name;
+
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Not Updated ! Genre didn't pass the validation!!";
+            }
+
+         
             return RedirectToAction("Countries", "Home");
         }
 
@@ -755,8 +850,12 @@ namespace MovNotifier.Controllers
 
         public ActionResult Actors()
         {
+            var errMsg = TempData["ErrorMessage"] as string;
+            dynamic myModel = new ExpandoObject();
+            myModel.Actors = _context.Actors.ToList();
+            myModel.ErrorMessage = errMsg;
+            return View(myModel);
 
-            return View(_context.Actors.ToList());
         }
 
 
@@ -764,9 +863,17 @@ namespace MovNotifier.Controllers
         [HttpPost]
         public ActionResult CreateActor(Actor actor)
         {
+            if (ModelState.IsValid)
+            {
+                _context.Actors.Add(actor);
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Your Actor didn't pass the validation!!";
+            }
 
-            _context.Actors.Add(actor);
-            _context.SaveChanges();
+      
             return RedirectToAction("Actors", "Home");
 
         }
@@ -782,10 +889,18 @@ namespace MovNotifier.Controllers
         [HttpPost]
         public ActionResult UpdateActor(Actor actor)
         {
-            Actor d = _context.Actors.Where(s => s.Id == actor.Id).First();
-            d.name = actor.name;
+            if (ModelState.IsValid)
+            {
+                Actor d = _context.Actors.Where(s => s.Id == actor.Id).First();
+                d.name = actor.name;
 
-            _context.SaveChanges();
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Not Updated ! Genre didn't pass the validation!!";
+            }
+         
             return RedirectToAction("Actors", "Home");
         }
 
@@ -808,8 +923,13 @@ namespace MovNotifier.Controllers
 
         public ActionResult Directors()
         {
+            var errMsg = TempData["ErrorMessage"] as string;
+            dynamic myModel = new ExpandoObject();
+            myModel.Directors = _context.Directors.ToList();
+            myModel.ErrorMessage = errMsg;
+            return View(myModel);
 
-            return View(_context.Directors.ToList());
+            
         }
 
 
@@ -817,9 +937,17 @@ namespace MovNotifier.Controllers
         [HttpPost]
         public ActionResult CreateDirector(Director director)
         {
+            if (ModelState.IsValid)
+            {
+                _context.Directors.Add(director);
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Your Actor didn't pass the validation!!";
+            }
 
-            _context.Directors.Add(director);
-            _context.SaveChanges();
+           
             return RedirectToAction("Directors", "Home");
 
         }
@@ -835,10 +963,18 @@ namespace MovNotifier.Controllers
         [HttpPost]
         public ActionResult UpdateDirector(Director director)
         {
-            Director d = _context.Directors.Where(s => s.Id == director.Id).First();
-            d.name = director.name;
+            if (ModelState.IsValid)
+            {
+                Director d = _context.Directors.Where(s => s.Id == director.Id).First();
+                d.name = director.name;
 
-            _context.SaveChanges();
+                _context.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Not Updated ! Genre didn't pass the validation!!";
+            }
+           
             return RedirectToAction("Directors", "Home");
         }
 

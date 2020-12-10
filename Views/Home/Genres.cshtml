@@ -2,10 +2,19 @@
     ViewData["AdminTitle"] = "Movies";
     Layout = "_LayoutAdmin";
 }
-@model IEnumerable<MovNotifier.Models.Genre>
+@model dynamic
+
+<script src="~/scripts/jquery.js"></script>
+<script src="~/scripts/jquery.validate.js"></script>
+<script src="~/scripts/jquery.validate.unobtrusive.js"></script>
 
 <div class="wrapper" style="margin-top: 20px; ">
-
+    @if (Model.ErrorMessage != null)
+    {
+        <div class="alert alert-danger" role="alert" style="float:right">
+            @Model.ErrorMessage
+        </div>
+    }
     <div class="row">
         <div style="padding: 30px;">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTask">+ ADD Genre</button>
@@ -29,7 +38,7 @@
 
                                         <form asp-controller="Home" asp-action="CreateGenre" method="post">
                                             <div class="form-group ">
-                                                <label class="control-label requiredField" for="name">
+                                                <label class="control-label requiredField" for="name" >
                                                     Genre Name
                                                     <span class="asteriskField">
                                                         *
@@ -89,7 +98,7 @@
                         </thead>
                         <tbody>
 
-                            @foreach (var item in Model)
+                            @foreach (Genre item in Model.Genres)
                             {
                                 <tr>
                                     <td>@Html.DisplayFor(modelItem => item.Id)</td>

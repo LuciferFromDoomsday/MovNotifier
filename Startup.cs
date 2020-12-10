@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MovNotifier.Models;
+using MovNotifier.Services;
 
 namespace MovNotifier
 {
@@ -28,7 +29,7 @@ namespace MovNotifier
         {
             services.AddControllersWithViews();
             services.AddRazorPages();
-
+            services.AddScoped<GenreService, GenreServiceImpl>();
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;

@@ -24,6 +24,7 @@
     ".NETCoreApp,Version=v3.1": {
       "MovNotifier/1.0.0": {
         "dependencies": {
+          "Markdig": "0.22.1",
           "Microsoft.AspNet.Mvc": "5.2.7",
           "Microsoft.AspNetCore.Authentication.Google": "3.1.10",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "5.0.0",
@@ -304,6 +305,17 @@
         },
         "compile": {
           "MovNotifier.dll": {}
+        }
+      },
+      "Markdig/0.22.1": {
+        "runtime": {
+          "lib/netcoreapp3.1/Markdig.dll": {
+            "assemblyVersion": "0.22.1.0",
+            "fileVersion": "0.22.1.0"
+          }
+        },
+        "compile": {
+          "lib/netcoreapp3.1/Markdig.dll": {}
         }
       },
       "Microsoft.AspNet.Mvc/5.2.7": {
@@ -3575,6 +3587,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "Markdig/0.22.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Rw4Z2yUaMQIVNBVnTrCzvulEzF0TdzNprIMZ0knOB0jnVryjOUHDeyVdwFHbWjHLf84sU6TvxI03U6+jC4UBVA==",
+      "path": "markdig/0.22.1",
+      "hashPath": "markdig.0.22.1.nupkg.sha512"
     },
     "Microsoft.AspNet.Mvc/5.2.7": {
       "type": "package",

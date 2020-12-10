@@ -23,5 +23,7 @@
   <ItemGroup>
     <Folder Include="Services\" />
     <Folder Include="wwwroot\images\" />
+    <Folder Include="Utilities\" />
+    <Folder Include="Utilities\Validations\" />
   </ItemGroup>
 </Project>

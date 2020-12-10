@@ -2,10 +2,16 @@
     ViewData["AdminTitle"] = "Movies";
     Layout = "_LayoutAdmin";
 }
-@model IEnumerable<MovNotifier.Models.Director>
+@model dynamic
+
 
 <div class="wrapper" style="margin-top: 20px; ">
-
+    @if (Model.ErrorMessage != null)
+    {
+        <div class="alert alert-danger" role="alert" style="float:right">
+            @Model.ErrorMessage
+        </div>
+    }
     <div class="row">
         <div style="padding: 30px;">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTask">+ ADD Director </button>
@@ -89,7 +95,7 @@
                         </thead>
                         <tbody>
 
-                            @foreach (var item in Model)
+                            @foreach (Director item in Model.Directors)
                             {
                                 <tr>
                                     <td>@Html.DisplayFor(modelItem => item.Id)</td>

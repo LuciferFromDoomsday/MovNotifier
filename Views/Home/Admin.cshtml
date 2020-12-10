@@ -4,8 +4,14 @@
 }
 @model dynamic
 <div class="wrapper" style="margin-top: 20px; ">
-
+    @if (Model.ErrorMessage != null)
+    {
+        <div class="alert alert-danger" role="alert" style="float:right">
+            @Model.ErrorMessage
+        </div>
+    }
     <div class="row">
+
         <div style="padding: 30px;">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTask">+ ADD Movie</button>
             <!-- The Modal -->

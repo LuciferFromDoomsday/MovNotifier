@@ -154,3 +154,4 @@
 /Users/admin/Projects/MovNotifier/MovNotifier/bin/Debug/netcoreapp3.1/Microsoft.Extensions.Identity.Core.dll
 /Users/admin/Projects/MovNotifier/MovNotifier/bin/Debug/netcoreapp3.1/Microsoft.Extensions.Identity.Stores.dll
 /Users/admin/Projects/MovNotifier/MovNotifier/obj/Debug/netcoreapp3.1/Razor/Views/Home/Details.cshtml.g.cs
+/Users/admin/Projects/MovNotifier/MovNotifier/bin/Debug/netcoreapp3.1/Markdig.dll
