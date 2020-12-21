@@ -14,6 +14,10 @@ using MovNotifier.Services;
 using OMDbApiNet.Model;
 
 using System.Web;
+using System.Text.RegularExpressions;
+using Npgsql;
+using System.Data;
+
 namespace MovNotifier.Controllers
 {
     [Authorize]
@@ -34,7 +38,39 @@ namespace MovNotifier.Controllers
      
         }
 
-        public ActionResult Index(string search)
+        public ActionResult Index()
+        {
+            //try
+            //{
+            //    if (search == null)
+            //    {
+            //        MovieAPI api = new MovieAPI();
+
+            //        dynamic myModel = new ExpandoObject();
+            //        myModel.Movies = api.GetMoviesByYear("2020");
+            //        return View(myModel);
+            //    }
+            //    else
+            //    {
+            //        MovieAPI api = new MovieAPI();
+
+            //        dynamic myModel = new ExpandoObject();
+            //        myModel.Movies = api.GetMoviesByTitle(search);
+            //        return View(myModel);
+
+            //    }
+               
+            //}
+            //catch
+            //{
+            //    dynamic myModel = new ExpandoObject();
+            //    myModel.Movies = new List<SearchItem>();
+            //    return View(myModel);
+            //}
+            return View();
+
+        }
+        public ActionResult SearchResult(string search)
         {
             try
             {
@@ -55,7 +91,7 @@ namespace MovNotifier.Controllers
                     return View(myModel);
 
                 }
-               
+
             }
             catch
             {
@@ -63,8 +99,8 @@ namespace MovNotifier.Controllers
                 myModel.Movies = new List<SearchItem>();
                 return View(myModel);
             }
-          
-           
+
+
         }
         [HttpGet]
         public ActionResult Details(string IMDBID)
@@ -190,8 +226,50 @@ namespace MovNotifier.Controllers
 
 
                 //    }
+                NpgsqlConnection conn = new NpgsqlConnection("Host=localhost;Database=MovieDB;Username=postgres;Password=123456789");
+                conn.Open();
+                NpgsqlTransaction tran = conn.BeginTransaction();
 
-                return View(myModel);
+                NpgsqlCommand command = new NpgsqlCommand("SELECT exists(SELECT 1 from user_history where user_id = " + CurrentUser.getCurrentUser().Id + " and movie_id = " + m.Id + ")", conn);
+
+                // Execute the query and obtain a result set
+                NpgsqlDataReader dr = command.ExecuteReader();
+     
+                while (dr.Read())
+                {
+                    Console.Write("{0} \n", dr[0]);
+                    if ((string)dr[0] == "False")
+                    {
+                        NpgsqlCommand cmd = new NpgsqlCommand();
+                        cmd.CommandText = "INSERT INTO user_history (user_id, movie_id) VALUES (" + CurrentUser.getCurrentUser().Id + "," + m.Id + " )";
+                        cmd.Connection = conn;
+                        conn.Open();
+                        try
+                        {
+                            int aff = cmd.ExecuteNonQuery();
+
+
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Not Added");
+                            Console.WriteLine(e.Message);
+                        }
+                        finally
+                        {
+                            conn.Close();
+                        }
+                    }
+                    else {
+                        Console.WriteLine("Not Added");
+                    }
+
+                }
+
+               
+              
+
+            return View(myModel);
             }
             catch
             {
@@ -203,16 +281,27 @@ namespace MovNotifier.Controllers
                 m.Description = i.Plot + "\n" + i.Awards;
                 m.ReleasDate = i.Released;
 
-                if (i.ImdbRating != "N/A" || i.ImdbRating != "" || i.Metascore != "N/A" || i.Metascore != "")
+
+
+                try
                 {
-                    double imdb = double.Parse(i.ImdbRating);
-                    double metascore = double.Parse(i.Metascore) / 10.0;
+                    if (i.ImdbRating != "N/A" || i.ImdbRating != "" || i.Metascore != "N/A" || i.Metascore != "" || i.ImdbRating != null || i.Metascore != null)
+                    {
+                        double imdb = double.Parse(i.ImdbRating);
+                        Console.WriteLine(i.Metascore);
+                        double metascore = double.Parse(Regex.Replace(i.Metascore, @"\s+", "")) / 10.0;
 
-                    Console.WriteLine(imdb + " " + metascore + " ");
+                        Console.WriteLine(imdb + " " + metascore + " ");
 
-                    m.AvgRating = (imdb + metascore) / 2.0;
+                        m.AvgRating = (imdb + metascore) / 2.0;
+                    }
+                }
+                catch {
+                    m.AvgRating = 4;
+
                 }
 
+            
                 Country c = new Country();
                 if (i.Country.Contains(","))
                 {
@@ -454,6 +543,26 @@ namespace MovNotifier.Controllers
                     }
                 }
                 myModel.Actors = actors1;
+
+                NpgsqlConnection conn = new NpgsqlConnection("Host=localhost;Database=MovieDB;Username=postgres;Password=123456789");
+                NpgsqlCommand cmd = new NpgsqlCommand();
+                cmd.CommandText = "INSERT INTO user_history (user_id, movie_id) VALUES (" + CurrentUser.getCurrentUser().Id + "," + m.Id + " )";
+                cmd.Connection = conn;
+                conn.Open();
+                try
+                {
+                    int aff = cmd.ExecuteNonQuery();
+
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                finally
+                {
+                    conn.Close();
+                }
 
                 return View(myModel);
             }
@@ -931,6 +1040,20 @@ namespace MovNotifier.Controllers
 
             
         }
+
+        public ActionResult WatchList()
+        {
+            RecommendationService rs = new RecommendationService(CurrentUser.getCurrentUser().Id);
+
+            dynamic myModel = new ExpandoObject();
+            myModel.Movies = rs.GetMoviesByFavotireGenre().ToList();
+
+         
+             return View(myModel);
+
+
+        }
+
 
 
 

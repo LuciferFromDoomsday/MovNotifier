@@ -1,0 +1,72 @@
+﻿@{ ViewData["Title"] = "WatchList";
+
+    Layout = "_Layout";
+
+}
+@using OMDbApiNet.Model;
+
+@model dynamic
+<link rel="stylesheet" type="text/css" href="~/css/watchlist.css">
+
+@if (Model.Movies.Count > 0)
+{
+    <br>
+    <br>
+    <h1 style="position:center">Your WatchList History : </h1>
+    @foreach (Movie c in Model.Movies)
+    {
+        <style>
+            .bright_back-@c.Id {
+                background: url( @c.Poster );
+                background-repeat:no-repeat;
+                background-size: cover;
+                background-attachment: fixed;
+                background-position: center;
+            }
+        </style>
+        <div class="movie_card" id="bright">
+            <div class="info_section">
+                <div class="movie_header">
+
+                    <h1>
+
+                        @if (@c.Title.Length < 10)
+                        {
+                            <p>@c.Title.Substring(0, @c.Title.Length) </p>
+                        }
+                        else
+                        {
+                            <p>@c.Title.Substring(0, 10) ...</p>
+                        }
+
+                    </h1>
+                    <h4>@Html.DisplayFor(modelItem => c.ReleasDate), @Html.DisplayFor(modelItem => c.Directors.name)</h4>
+                    <span class="minutes">@Html.DisplayFor(modelItem => c.Runtime)</span>
+                    <p class="type">
+                        Action
+                    </p>
+                </div>
+                <div class="movie_desc">
+                    <p class="text">
+                        @Html.DisplayFor(modelItem => c.Description)
+
+                    </p>
+                </div>
+
+            </div>
+            <div class="blur_back bright_back-@c.Id"></div>
+        </div>
+    }
+}
+
+else {
+
+
+<br>
+<br>
+<h1 class="alert alert-warning" style="position:center">Your Movie History is empty ! At first try to search some moveies you like ! </h1>
+
+}
+
+
+

@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+    Layout = "_Layout";
+
+}
+@using OMDbApiNet.Model;
+
+@model dynamic
+
+<br >
+<br>
+<section id="movies-list">
+    @if (Model.Movies.Count > 0)
+    {
+
+        foreach (SearchItem c in Model.Movies)
+        {
+            <form asp-controller="Home"
+                  asp-action="Details" method="get">
+                <input type="hidden" id="IMDBID" name="IMDBID" value="@c.ImdbId" />
+                <div class="movies-box">
+
+                    <div class="movies-img">
+                        <div class="quality">HDRip</div>
+                        <img src="@c.Poster">
+                    </div>
+
+                    @Html.DisplayFor(modelItem => c.Title)
+                    (@Html.DisplayFor(modelItem => @c.Year))
+                    <button class="btn btn-primary" type="submit"> See Details</button>
+                </div>
+            </form>
+
+        }
+
+    }
+
+    else
+    {
+
+
+
+        <div class="search-message-empty-container">
+            <span class="search-message-empty-decal">
+                <span class="search-message-empty-decal-eyes">:</span>
+                <span>(</span>
+            </span>
+            <h2 class="search-message-empty-message">
+                Nope, nothing.
+            </h2>
+        </div>
+
+
+
+    }
+</section>

@@ -177,18 +177,7 @@
                                     <td>@Html.DisplayFor(modelItem => item.Directors.name)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Runtime)</td>
                                     <td>@Html.DisplayFor(modelItem => item.ReleasDate)</td>
-                                    @*<td>
-                                            @foreach (var actor in item.Actors.ToList())
-                                            {
-                                                @Html.DisplayFor(modelItem => actor.Actor.name)
-                                            }
-                                        </td>
-                                        <td>
-                                            @foreach (var genre in item.Genres.ToList())
-                                            {
-                                                @Html.DisplayFor(modelItem => genre.Genre.Name)
-                                            }
-                                        </td>*@
+                               
                                     <td><a href="/Home/UpdateMoviePage/@item.Id">Update</a> | <a href="" onclick="Delete('@item.Id')">Delete</a></td>
                                 </tr>
                             }

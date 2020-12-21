@@ -33,7 +33,7 @@ namespace MovNotifier.Models
 
             if (Name.Length > 30)
                 errors.Add(new ValidationResult($"Name: {Name} not allowed to work. Max name length is 30 ", new[] { nameof(Name) }));
-
+                
 
             // Database call through service for validation
             var dbContext = new GenreServiceImpl();

@@ -1,7 +1,7 @@
 ﻿@{
     User CURRENT_USER = CurrentUser.getCurrentUser();
 }
-}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -49,29 +49,9 @@
     </style>
 </head>
 <body>
-    @*<header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MovNotifier</a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                        <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Admin"> Admin </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>*@
-    <!--navigation-------------->
-    <nav>
+
+
+    <nav >
         <!--logo--------------->
         <!--menu--btn----------------->
         <input type="checkbox" class="menu-btn" id="menu-btn" />
@@ -80,12 +60,14 @@
         </label>
         <!--menu-------------->
         <ul class="menu">
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Movies</a></li>
-            <li><a href="#">TV Shows</a></li>
-            <li><a href="#">Hollywood</a></li>
-            <li><a href="#">Horror</a></li>
+            <li>
+                <a asp-controller="Home" asp-action="Index"> Index </a>
 
+            </li>
+            <li>
+                <a asp-controller="Home" asp-action="WatchList"> Your WatchList </a>
+
+            </li>
             @if (CURRENT_USER != null)
             {
                 @if (CURRENT_USER.Role == "ADMIN")
@@ -96,7 +78,7 @@
                     </li>
                 }
                 <li style="float:right"><a href="#">@CURRENT_USER.Email</a></li>
-                <li  style="float:right"><a asp-controller="Account" asp-action="GoogleLogout" >Logout</a></li>
+                <li style="float:right"><a asp-controller="Account" asp-action="GoogleLogout">Logout</a></li>
             }
             else
             {
@@ -107,18 +89,18 @@
         </ul>
         <!--search------------->
         <div class="search">
-            <form asp-controller="Home" asp-action="Index" method="post">
+            <form asp-controller="Home" asp-action="SearchResult" method="post">
                 <input type="text" id="searchTitle" name="search" placeholder="Find Your Favourtie Movies">
                 <!--search-icon----------->
 
             </form>
         </div>
     </nav>
-    <div class="container">
-        <main role="main" class="pb-3">
+ 
+        <main role="main" class="pb-3" style="padding-top:20px">
             @RenderBody()
         </main>
-    </div>
+
 
     <footer>
         <p>Going To Internet, Ltd Consumer Website</p>
