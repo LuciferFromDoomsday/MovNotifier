@@ -40,34 +40,25 @@ namespace MovNotifier.Controllers
 
         public ActionResult Index()
         {
-            //try
-            //{
-            //    if (search == null)
-            //    {
-            //        MovieAPI api = new MovieAPI();
+           
 
-            //        dynamic myModel = new ExpandoObject();
-            //        myModel.Movies = api.GetMoviesByYear("2020");
-            //        return View(myModel);
-            //    }
-            //    else
-            //    {
-            //        MovieAPI api = new MovieAPI();
-
-            //        dynamic myModel = new ExpandoObject();
-            //        myModel.Movies = api.GetMoviesByTitle(search);
-            //        return View(myModel);
-
-            //    }
-               
-            //}
-            //catch
-            //{
-            //    dynamic myModel = new ExpandoObject();
-            //    myModel.Movies = new List<SearchItem>();
-            //    return View(myModel);
-            //}
-            return View();
+            dynamic myModel = new ExpandoObject();
+            RecommendationService recommendationService = new RecommendationService();
+            myModel.Recommendation = recommendationService.GetRecommendations();
+            myModel.favoriteDirectors = recommendationService.getFavoriteDirectors();
+            myModel.favoriteActors = recommendationService.getFavoriteActors();
+            myModel.favoriteGenres = recommendationService.getFavoriteGenres();
+            recommendationService.GetMoviesOfUser().Reverse();
+            if (recommendationService.GetMoviesOfUser().Count() < 6)
+            {
+                
+                myModel.history = recommendationService.GetMoviesOfUser();
+            }
+            else
+            {
+                myModel.history = recommendationService.GetMoviesOfUser().Take(5);
+            }
+            return View(myModel);
 
         }
         public ActionResult SearchResult(string search)
@@ -1043,10 +1034,11 @@ namespace MovNotifier.Controllers
 
         public ActionResult WatchList()
         {
-            RecommendationService rs = new RecommendationService(CurrentUser.getCurrentUser().Id);
+            RecommendationService rs = new RecommendationService();
 
             dynamic myModel = new ExpandoObject();
-            myModel.Movies = rs.GetMoviesByFavotireGenre().ToList();
+              
+            myModel.Movies = rs.GetMoviesOfUser().ToList();
 
          
              return View(myModel);

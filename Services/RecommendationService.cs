@@ -8,19 +8,31 @@ namespace MovNotifier.Services
 {
     public class RecommendationService
     {
-        private int user_id;
+        private int user_id = CurrentUser.getCurrentUser().Id;
 
-        static private List<Genre> favoriteGenres ;
+        private List<Genre> favoriteGenres;
 
-        static private List<Actor> favoriteActors  ;
+        private List<Actor> favoriteActors;
 
-        static  private List<Director> favoriteDirectors ;
+        private List<Director> favoriteDirectors;
 
-       
+
         readonly private MovieContext _context = new MovieContext();
-        public RecommendationService(int id)
+
+
+
+        public List<Genre> getFavoriteGenres()
         {
-            this.user_id = id;
+            return favoriteGenres;
+        }
+
+        public List<Actor> getFavoriteActors() {
+            return favoriteActors;
+        }
+
+        public List<Director> getFavoriteDirectors()
+        {
+            return favoriteDirectors;
         }
 
 
@@ -57,11 +69,11 @@ namespace MovNotifier.Services
 
 
             conn.Close();
-
+            movies.Reverse();
             return movies.ToList();
         }
 
-        public List<Movie> GetMoviesByFavotireGenre()
+        public void GetMoviesByFavotireGenre()
         {
             List<Movie> movies = GetMoviesOfUser();
 
@@ -95,12 +107,12 @@ namespace MovNotifier.Services
 
 
             }
-            RecommendationService.favoriteGenres = favoriteGenres;
-            return movies.ToList();
+            this.favoriteGenres = favoriteGenres;
+            
 
         }
 
-        public List<Movie> GetMoviesByFavotireActor()
+        public void GetMoviesByFavotireActor()
         {
             List<Movie> movies = GetMoviesOfUser();
 
@@ -133,8 +145,8 @@ namespace MovNotifier.Services
                     Console.WriteLine("{0} : {1}", result.Key.name, result.Count());
                 }
             }
-            RecommendationService.favoriteActors = favoriteActors;
-            return movies.ToList();
+            this.favoriteActors = favoriteActors;
+          
 
         }
 
@@ -149,7 +161,7 @@ namespace MovNotifier.Services
             foreach (Movie m in movies)
             {
 
-          if(m.AvgRating > 6.0)
+                if (m.AvgRating > 6.0)
                 {
                     allMov.Add(m);
                 }
@@ -164,7 +176,7 @@ namespace MovNotifier.Services
 
 
 
-        public List<Movie> GetMoviesByFavotireDirector()
+        public void GetMoviesByFavotireDirector()
         {
             List<Movie> movies = GetMoviesOfUser();
 
@@ -183,7 +195,6 @@ namespace MovNotifier.Services
 
                 NpgsqlCommand command = new NpgsqlCommand(@"SELECT ""DirectorsId"" from public.""Movies""  where ""Id"" = " + m.Id, conn);
 
-                // Execute the query and obtain a result set
                 using (NpgsqlDataReader dr = command.ExecuteReader())
                 {
 
@@ -192,9 +203,11 @@ namespace MovNotifier.Services
 
                         if (dr[0] != null)
                         {
+                            
                             try
                             {
                                 allDirectors.Add(_context.Directors.Where(s => s.Id == (int)dr[0]).First());
+                               
                             }
                             catch (Exception e)
                             {
@@ -207,6 +220,8 @@ namespace MovNotifier.Services
 
             }
 
+          
+
             int count = allDirectors.GroupBy(i => i).Max(s => s.Count());
 
             foreach (var result in allDirectors.GroupBy(i => i))
@@ -217,12 +232,144 @@ namespace MovNotifier.Services
                     Console.WriteLine("{0} : {1}", result.Key.name, result.Count());
                 }
             }
-            RecommendationService.favoriteDirectors = favoriteDirectors;
-            return movies.ToList();
+
+            this.favoriteDirectors = favoriteDirectors;
+            conn.Close();
+
+        }
+
+
+        public List<Movie> GetRecommendations()
+        {
+            if (GetMoviesOfUser() != null && GetMoviesOfUser().Count > 0 )
+            {
+                List<Movie> movies = GetMoviesOfUser();
+                GetMoviesByFavotireActor();
+                GetMoviesByFavotireDirector();
+                GetMoviesByFavotireGenre();
+
+                //foreach (Genre g in favoriteGenres) {
+                //    Console.WriteLine(g.Name);
+                //        }
+                //foreach (Actor a in favoriteActors)
+                //{
+                //    Console.WriteLine(a.name);
+                //}
+                //foreach (Director d in favoriteDirectors)
+                //{
+                //    Console.WriteLine(d.name);
+                //}
+
+                List<Movie> nonUserMovies = _context.Movies.ToList();
+
+                List<Movie> recommendations = new List<Movie>();
+                foreach (Movie m in movies.ToList())
+                {
+                    if (nonUserMovies.Contains(m))
+                    {
+                        nonUserMovies.Remove(m);
+                    }
+
+
+                }
+
+                foreach (Movie m in nonUserMovies)
+                {
+                    foreach(Director d in favoriteDirectors)
+                    {
+                        try
+                        {
+                           
+                            if (d.name == MovieDbUtilities.GetDirector(m.Id).name)
+                            {
+                                Console.WriteLine("Added by direcotr");
+                                recommendations.Add(m);
+                            }
+                        }
+                        catch (Exception e) {
+                            Console.WriteLine(e.Message);
+                        }
+
+                    }
+
+
+
+          
+
+                    foreach (Actor a in MovieDbUtilities.GetActors(m.Id))
+                    {
+                        foreach (Actor ac in favoriteActors)
+                        {
+                            if (a.name == ac.name)
+                            {
+                                Console.WriteLine("Added");
+                                recommendations.Add(m);
+                            }
+                        }
+
+                    }
+
+
+
+
+                }
+                foreach (Movie m in nonUserMovies)
+                {
+                    foreach (Genre g in MovieDbUtilities.GetGenres(m.Id).ToList())
+                    {
+                        foreach (Genre genre in favoriteGenres)
+                        {
+                            if (genre.Name == g.Name)
+                            {
+                                Console.WriteLine("Added");
+                                recommendations.Add(m);
+                            }
+
+                        }
+
+
+                    }
+                }
+                    //foreach(var result in recommendations.GroupBy(i => i)) {
+                    //    Console.WriteLine("{0} : {1}", result.Key.Title, result.Count());
+                    //}
+
+                    recommendations = recommendations.GroupBy(x => x.Title).Select(x => x.First()).ToList();
+
+
+                if (recommendations.Count() < 5)
+                {
+                    foreach (Movie m in nonUserMovies) {
+
+                        if (recommendations.Count() > 8)
+                        {
+
+                            if (!recommendations.Contains(m) && m.AvgRating > 8)
+                            {
+                                recommendations.Add(m);
+                            }
+                        }
+                        else {
+                            break;
+                        }
+
+
+                    }
+
+                }
+                return recommendations;
+            }
+            else {
+
+                return _context.Movies.Where(s => s.AvgRating > 8.5).ToList();
+
+
+            }
+
 
         }
 
 
     }
-   }
+}
 
