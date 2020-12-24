@@ -61,12 +61,12 @@
                             <div class="entity-category">
                                 @foreach (Genre genre in Model.Genres)
                                 {
-                                  
+
 
                                     <a class="content-link" href=""> @Html.DisplayFor(modelItem => genre.Name) &nbsp;</a>
 
                                 }
-                  
+
                             </div>
                             <div class="entity-info">
                                 <div class="info-lines">
@@ -78,7 +78,7 @@
                                     <div class="info info-short">
                                         <span class="text-theme info-icon"><i class="fas fa-clock"></i></span>
                                         <span class="info-text">@Model.Movie.Runtime</span>
-                                       
+
                                     </div>
                                 </div>
                             </div>
@@ -94,25 +94,25 @@
                                     <span class="entity-list-title">Actors:</span>
                                     @foreach (Actor actor in Model.Actors)
                                     {
-                                        
-                                        <a class="content-link" href="#"> @Html.DisplayFor(modelItem => actor.name) &nbsp;</a> 
 
-                                                                            }
+                                        <a class="content-link" href="#"> @Html.DisplayFor(modelItem => actor.name) &nbsp;</a>
 
-                              
+                                    }
+
+
                                 </li>
-                           
+
                                 <li>
                                     <span class="entity-list-title">Country:</span>
 
                                     <a class="content-link" href="#">@MovieDbUtilities.GetCountry(Model.Movie.Id).name</a>
-                   
+
                                 </li>
                                 <li>
                                     <span class="entity-list-title">Language:</span>
                                     @foreach (Language language in MovieDbUtilities.GetLanguages(Model.Movie.Id))
                                     {
-                                <a class="content-link" href="#"> @Html.DisplayFor(modelItem => language.name) &nbsp;</a>
+                                        <a class="content-link" href="#"> @Html.DisplayFor(modelItem => language.name) &nbsp;</a>
                                     }
                                 </li>
                             </ul>
@@ -127,9 +127,9 @@
                         <p class="lead">
                             @Model.Movie.Description
                         </p>
- 
+
                     </div>
-           
+
                 </div>
 
             </section>

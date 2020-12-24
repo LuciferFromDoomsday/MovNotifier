@@ -157,3 +157,9 @@
 /Users/admin/Projects/MovNotifier/MovNotifier/bin/Debug/netcoreapp3.1/Markdig.dll
 /Users/admin/Projects/MovNotifier/MovNotifier/obj/Debug/netcoreapp3.1/Razor/Views/Home/WatchList.cshtml.g.cs
 /Users/admin/Projects/MovNotifier/MovNotifier/obj/Debug/netcoreapp3.1/Razor/Views/Home/SearchResult.cshtml.g.cs
+/Users/admin/Projects/MovNotifier/MovNotifier/bin/Debug/netcoreapp3.1/TMDbLib.dll
+/Users/admin/Projects/MovNotifier/MovNotifier/obj/Debug/netcoreapp3.1/Razor/Views/Home/ExistingMovieDetails.cshtml.g.cs
+/Users/admin/Projects/MovNotifier/MovNotifier/bin/Debug/netcoreapp3.1/MailKit.dll
+/Users/admin/Projects/MovNotifier/MovNotifier/bin/Debug/netcoreapp3.1/MimeKit.dll
+/Users/admin/Projects/MovNotifier/MovNotifier/bin/Debug/netcoreapp3.1/BouncyCastle.Crypto.dll
+/Users/admin/Projects/MovNotifier/MovNotifier/obj/Debug/netcoreapp3.1/Razor/Views/Home/Page403.cshtml.g.cs

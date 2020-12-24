@@ -41,6 +41,10 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "dependencies": {
+            "MailKit": {
+              "target": "Package",
+              "version": "[2.10.0, )"
+            },
             "Markdig": {
               "target": "Package",
               "version": "[0.22.1, )"
@@ -76,6 +80,10 @@
             "OmdbApiNet": {
               "target": "Package",
               "version": "[1.3.0, )"
+            },
+            "TMDbLib": {
+              "target": "Package",
+              "version": "[1.6.0, )"
             }
           },
           "imports": [

@@ -44,12 +44,65 @@ namespace MovNotifier.Services
             return null;
         }
 
+
+
+        public static Country GetCountry(int movie_id)
+        {
+
+            conn.Open();
+            NpgsqlTransaction tran = conn.BeginTransaction();
+            NpgsqlCommand command = new NpgsqlCommand(@"SELECT ""CountryID"" from public.""Movies""  where ""Id"" = " + movie_id, conn);
+
+            using (NpgsqlDataReader dr = command.ExecuteReader())
+            {
+
+                if (dr.Read())
+                {
+
+                    if (dr[0] != null)
+                    {
+
+
+
+                        Country d = _context.Countries.Where(s => s.ID == (int)dr[0]).First();
+                        conn.Close();
+                        return d;
+
+
+
+                    }
+
+                }
+
+            }
+            conn.Close();
+            return null;
+        }
+
+
+        public static List<Language> GetLanguages(int movie_id)
+        {
+            List<Language> languages = new List<Language>();
+
+            List<Language> allLanguages = new List<Language>();
+            List<ListLanguages> listActors = _context.ListLanguages.Where(s => s.LanguageId == movie_id).ToList();
+
+            foreach (ListLanguages lg in listActors)
+            {
+
+                allLanguages.Add(_context.Languages.Where(s => s.Id == lg.MovieId).First());
+
+            }
+            return allLanguages;
+        }
+
         public static List<Actor> GetActors(int movie_id)
         {
             List<Actor> favoriteActors = new List<Actor>();
 
             List<Actor> allActors = new List<Actor>();
-            List<ListActors> listActors = _context.ListActors.Where(s => s.ActorId == movie_id).ToList();
+            MovieContext context = new MovieContext();
+            List<ListActors> listActors = context.ListActors.Where(s => s.ActorId == movie_id).ToList();
 
             foreach (ListActors lg in listActors)
             {

@@ -6,6 +6,7 @@
 }
 @using OMDbApiNet.Model;
 @using MovNotifier.Services;
+@using TMDbLib.Objects.Search;
 @model dynamic
 <!--movies---------------------------->
 
@@ -81,34 +82,46 @@
                 Movies Recommended
                 <span class="text-theme">For You</span>
             </h2>
+            <form asp-controller="Home" asp-action="SendRecommendation" method="post">
+                <input type="hidden" name="Id" value="@Model.MailRecommendation"/>
+                <button style="float:right" class="btn btn-warning" type="submit">
+                    Send Recommendation to Gmail
+                </button>
+            </form>
             <h6>
-                Recommendations based on Most Searched Directors :
-                @foreach (Director d in Model.favoriteDirectors)
+                @if (Model.favoriteDirectors != null && Model.favoriteActors != null && Model.favoriteGenres != null)
                 {
+                    <p>Recommendations based on Most Searched Directors :</p>
+                    @foreach (Director d in Model.favoriteDirectors)
+                    {
 
-                    <span class="text-theme">
-                      @Html.DisplayFor(modelItem => d.name) |
-                    </span>
-                }
-                Most Searched Actors :
-                @foreach (Actor a in Model.favoriteActors)
-                {
+                        <span class="text-theme">
+                            @Html.DisplayFor(modelItem => d.name) |
+                        </span>
+                    }
+                    <p>
+                        Most Searched Actors:
+                    </p>
+                    @foreach (Actor a in Model.favoriteActors)
+                    {
 
-                    <span class="text-theme">
-                        @Html.DisplayFor(modelItem => a.name)  |
-                    </span>
-                    
-                }
-                Most Searched Genres :
-                @foreach (Genre g in Model.favoriteGenres)
-                {
+                        <span class="text-theme">
+                            @Html.DisplayFor(modelItem => a.name)  |
+                        </span>
 
-                    <span class="text-theme">
-                       @Html.DisplayFor(modelItem => g.Name)  |
-                    </span>
-                }
+                    }
+            <p>
+                Most Searched Genres:
+            </p>
+                        @foreach (Genre g in Model.favoriteGenres)
+                        {
 
-            </h6>
+                            <span class="text-theme">
+                                @Html.DisplayFor(modelItem => g.Name)  |
+                            </span>
+                        }
+                        }
+                </h6>
         </div>
         <div class="top-block-footer">
             <div class="slick-spaced slick-carousel" data-slick-view="navigation responsive-4">
@@ -124,12 +137,21 @@
                             <div class="d-background bg-theme-lighted collapse animated faster" data-show-class="fadeIn show" data-hide-class="fadeOut show"></div>
                             <div class="d-over bg-highlight-bottom">
                                 <div class="collapse animated faster entity-play" data-show-class="fadeIn show" data-hide-class="fadeOut show">
-                                    <a class="action-icon-theme action-icon-bordered rounded-circle" href="@movie.Poster" data-magnific-popup="iframe">
+                                    <a class="action-icon-theme action-icon-bordered rounded-circle" href="@TheMovieDbUtilities.getLinkByName(movie.Title)" data-magnific-popup="iframe">
                                         <span class="icon-content"><i class="fas fa-play"></i></span>
                                     </a>
                                 </div>
                                 <h4 class="entity-title">
-                                    <a class="content-link" href="movie-info-sidebar-right.html">@Html.DisplayFor(modelItem => movie.Title)</a>
+                                    <form asp-controller="Home"
+                                          asp-action="ExistingMovieDetails" method="get">
+                                        <input type="hidden" name="Id" value="@movie.Id" />
+
+                                        <button type="submit" class="content-link" style="border: none;background-color: Transparent;background-repeat: no-repeat;border: none; cursor: pointer;overflow: hidden;outline: none;">
+                                            @Html.DisplayFor(modelItem => movie.Title)
+                                        </button>
+
+                                    </form>
+                                 
                                 </h4>
                                 <div class="entity-category">
                                     @if (MovieDbUtilities.GetGenres(movie.Id).ToList().Count() < 3)
@@ -195,6 +217,8 @@
         </div>
     </div>
 </section>
+@if (Model.history != null && Model.historyCount > 0)
+{
 <section class="section-long">
     <div class="container">
         <div class="section-head">
@@ -209,7 +233,7 @@
                     </div>
                     <div class="d-over bg-theme-lighted collapse animated faster" data-show-class="fadeIn show" data-hide-class="fadeOut show">
                         <div class="entity-play">
-                            <a class="action-icon-theme action-icon-bordered rounded-circle" href="@mov.Poster" data-magnific-popup="iframe">
+                            <a class="action-icon-theme action-icon-bordered rounded-circle" href="@TheMovieDbUtilities.getLinkByName(mov.Title)" data-magnific-popup="iframe">
                                 <span class="icon-content"><i class="fas fa-play"></i></span>
                             </a>
                         </div>
@@ -217,7 +241,15 @@
                 </div>
                 <div class="entity-content">
                     <h4 class="entity-title">
-                        <a class="content-link" href="movie-info-sidebar-right.html">@Html.DisplayFor(modelItem => mov.Title)</a>
+                        <form asp-controller="Home"
+                  asp-action="ExistingMovieDetails" method="get">
+                            <input type="hidden" name="Id" value="@mov.Id"/>
+                         
+                                <button type="submit" class="content-link" style="border: none;background-color: Transparent;background-repeat: no-repeat;border: none; cursor: pointer;overflow: hidden;outline: none;">
+    @Html.DisplayFor(modelItem => mov.Title)
+</button>
+                          
+                        </form>
                     </h4>
                     <div class="entity-category">
                         @if (MovieDbUtilities.GetGenres(mov.Id).ToList().Count() < 3)
@@ -281,8 +313,9 @@
     </h3>
     </div>
 </section>
+}
 <section class="section-solid-long section-text-white position-relative">
-    <div class="d-background" data-image-src="http://via.placeholder.com/1920x1080" data-parallax="scroll"></div>
+    <div class="d-background" data-image-src="~/images/home-bcg.jpg" data-parallax="scroll"></div>
     <div class="d-background bg-gradient-black"></div>
     <div class="container position-relative">
         <div class="section-head">
@@ -290,15 +323,17 @@
         </div>
         <div class="slick-spaced slick-carousel" data-slick-view="navigation single">
             <div class="slick-slides">
+                @foreach (SearchMovie sr in Model.UpcomingMovies)
+                {
                 <div class="slick-slide">
                     <article class="movie-line-entity">
                         <div class="entity-preview">
                             <div class="embed-responsive embed-responsive-16by9">
-                                <img class="embed-responsive-item" src="http://via.placeholder.com/1920x1080" alt="" />
-                            </div>
+                                <img class="embed-responsive-item" src="https://image.tmdb.org/t/p/w500/@sr.PosterPath" alt="" />
+                            </div> 
                             <div class="d-over">
                                 <div class="entity-play">
-                                    <a class="action-icon-theme action-icon-bordered rounded-circle" href="https://www.youtube.com/watch?v=d96cjJhvlMA" data-magnific-popup="iframe">
+                                    <a class="action-icon-theme action-icon-bordered rounded-circle" href="@TheMovieDbUtilities.getLinkById(sr.Id)" data-magnific-popup="iframe">
                                         <span class="icon-content"><i class="fas fa-play"></i></span>
                                     </a>
                                 </div>
@@ -306,22 +341,21 @@
                         </div>
                         <div class="entity-content">
                             <h4 class="entity-title">
-                                <a class="content-link" href="movie-info-sidebar-right.html">One way road</a>
+                                <a class="content-link" href="movie-info-sidebar-right.html">@Html.DisplayFor(modelItem => sr.Title)</a>
                             </h4>
-                            <div class="entity-category">
-                                <a class="content-link" href="movies-blocks.html">sport</a>,
-                                <a class="content-link" href="movies-blocks.html">musical</a>
-                            </div>
+                       
                             <div class="entity-info">
                                 <div class="info-lines">
                                     <div class="info info-short">
                                         <span class="text-theme info-icon"><i class="fas fa-calendar-alt"></i></span>
-                                        <span class="info-text">18 jul 2020</span>
+                                        <span class="info-text">@Html.DisplayFor(modelItem => sr.ReleaseDate)</span>
                                     </div>
                                     <div class="info info-short">
-                                        <span class="text-theme info-icon"><i class="fas fa-clock"></i></span>
-                                        <span class="info-text">130</span>
-                                        <span class="info-rest">&nbsp;min</span>
+                                        <span class="text-theme info-icon"><i class="fas fa-star"></i></span>
+                                        <span class="info-text">@String.Format("{0:0.0}", sr.VoteAverage)</span>
+                                        <span class="info-rest">/10</span>
+                                     
+
                                     </div>
                                 </div>
                             </div>
@@ -331,87 +365,7 @@
                         </div>
                     </article>
                 </div>
-                <div class="slick-slide">
-                    <article class="movie-line-entity">
-                        <div class="entity-preview">
-                            <div class="embed-responsive embed-responsive-16by9">
-                                <img class="embed-responsive-item" src="http://via.placeholder.com/1920x1080" alt="" />
-                            </div>
-                            <div class="d-over">
-                                <div class="entity-play">
-                                    <a class="action-icon-theme action-icon-bordered rounded-circle" href="https://www.youtube.com/watch?v=d96cjJhvlMA" data-magnific-popup="iframe">
-                                        <span class="icon-content"><i class="fas fa-play"></i></span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="entity-content">
-                            <h4 class="entity-title">
-                                <a class="content-link" href="movie-info-sidebar-right.html">Dance story</a>
-                            </h4>
-                            <div class="entity-category">
-                                <a class="content-link" href="movies-blocks.html">drama</a>
-                            </div>
-                            <div class="entity-info">
-                                <div class="info-lines">
-                                    <div class="info info-short">
-                                        <span class="text-theme info-icon"><i class="fas fa-calendar-alt"></i></span>
-                                        <span class="info-text">14 jul 2020</span>
-                                    </div>
-                                    <div class="info info-short">
-                                        <span class="text-theme info-icon"><i class="fas fa-clock"></i></span>
-                                        <span class="info-text">140</span>
-                                        <span class="info-rest">&nbsp;min</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="text-short entity-text">
-                                In luctus ac nisi vel vulputate. Sed blandit augue ut ex eleifend, ac posuere dolor sollicitudin. Mauris tempus euismod mauris id semper. Vestibulum ut vulputate elit, id ultricies libero. Aenean laoreet mi augue, at iaculis nisi aliquam eu. Quisque nec ipsum vehicula diam egestas porttitor eu vitae ex. Curabitur auctor tortor elementum leo faucibus, sit amet imperdiet ante maximus. Nulla viverra tortor dignissim purus placerat dapibus nec ut orci. Quisque efficitur nulla quis pulvinar dapibus. Phasellus sodales tortor sit amet sagittis condimentum. Donec ac ultricies ex. In odio leo, rhoncus aliquam bibendum sit amet, varius sit amet nisl.
-                            </p>
-                        </div>
-                    </article>
-                </div>
-                <div class="slick-slide">
-                    <article class="movie-line-entity">
-                        <div class="entity-preview">
-                            <div class="embed-responsive embed-responsive-16by9">
-                                <img class="embed-responsive-item" src="http://via.placeholder.com/1920x1080" alt="" />
-                            </div>
-                            <div class="d-over">
-                                <div class="entity-play">
-                                    <a class="action-icon-theme action-icon-bordered rounded-circle" href="https://www.youtube.com/watch?v=d96cjJhvlMA" data-magnific-popup="iframe">
-                                        <span class="icon-content"><i class="fas fa-play"></i></span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="entity-content">
-                            <h4 class="entity-title">
-                                <a class="content-link" href="movie-info-sidebar-right.html">Cloud 10</a>
-                            </h4>
-                            <div class="entity-category">
-                                <a class="content-link" href="movies-blocks.html">drama</a>,
-                                <a class="content-link" href="movies-blocks.html">superhero</a>
-                            </div>
-                            <div class="entity-info">
-                                <div class="info-lines">
-                                    <div class="info info-short">
-                                        <span class="text-theme info-icon"><i class="fas fa-calendar-alt"></i></span>
-                                        <span class="info-text">19 oct 2020</span>
-                                    </div>
-                                    <div class="info info-short">
-                                        <span class="text-theme info-icon"><i class="fas fa-clock"></i></span>
-                                        <span class="info-text">110</span>
-                                        <span class="info-rest">&nbsp;min</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="text-short entity-text">
-                                Vivamus dolor ex, viverra ut facilisis et, euismod et quam. Aliquam sit amet mattis velit, ullamcorper venenatis magna. Aenean ac maximus magna. Proin pharetra venenatis tortor, ac suscipit est ultrices vitae. Mauris vulputate, nisl in lacinia dignissim, libero justo vehicula arcu, a porttitor quam erat ac dui. Suspendisse potenti. Maecenas sit amet interdum sem. Vestibulum sit amet volutpat mauris, ut gravida velit. Donec ultricies, eros ut finibus volutpat, enim ligula tempus enim, non bibendum libero tellus at velit. Aenean placerat egestas ullamcorper.
-                            </p>
-                        </div>
-                    </article>
-                </div>
+                }
             </div>
             <div class="slick-arrows">
                 <div class="slick-arrow-prev">
@@ -451,3 +405,25 @@
 
 <script src="~/js/script.js"></script>
 <script async defer src="https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/js/rating.js"></script>
+
+<script>
+    $(function () {
+        $('#example1').DataTable();
+    });
+    function Details( Id){
+
+        if (r == true) {
+
+            $.ajax(
+            {
+                type: "GET",
+                url: '@Url.Action("ExistingMovieDetails", "Home")',
+                data: {
+                    Id: Id
+                }
+            });
+        }
+    }
+ 
+  
+</script>

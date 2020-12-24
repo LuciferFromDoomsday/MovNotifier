@@ -16,7 +16,7 @@ namespace MovNotifier.Services
 
         private List<Director> favoriteDirectors;
 
-
+        private List<Movie> recommendations;
         readonly private MovieContext _context = new MovieContext();
 
 
@@ -239,6 +239,15 @@ namespace MovNotifier.Services
         }
 
 
+        public Movie GetRecommendation() {
+
+            return recommendations.First();
+
+        }
+
+
+
+
         public List<Movie> GetRecommendations()
         {
             if (GetMoviesOfUser() != null && GetMoviesOfUser().Count > 0 )
@@ -335,6 +344,7 @@ namespace MovNotifier.Services
                     //}
 
                     recommendations = recommendations.GroupBy(x => x.Title).Select(x => x.First()).ToList();
+                
 
 
                 if (recommendations.Count() < 5)
@@ -357,10 +367,13 @@ namespace MovNotifier.Services
                     }
 
                 }
-                return recommendations;
+                recommendations = recommendations.Distinct().ToList();
+                this.recommendations = recommendations;
+                return recommendations ;
             }
             else {
 
+                this.recommendations = _context.Movies.Where(s => s.AvgRating > 8.5).ToList();
                 return _context.Movies.Where(s => s.AvgRating > 8.5).ToList();
 
 

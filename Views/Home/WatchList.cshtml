@@ -4,69 +4,199 @@
 
 }
 @using OMDbApiNet.Model;
-
+@using MovNotifier.Services;
+@using TMDbLib.Objects.Search;
 @model dynamic
 <link rel="stylesheet" type="text/css" href="~/css/watchlist.css">
 
-@if (Model.Movies.Count > 0)
-{
-    <br>
-    <br>
-    <h1 style="position:center">Your WatchList History : </h1>
-    @foreach (Movie c in Model.Movies)
-    {
-        <style>
-            .bright_back-@c.Id {
-                background: url( @c.Poster );
-                background-repeat:no-repeat;
-                background-size: cover;
-                background-attachment: fixed;
-                background-position: center;
-            }
-        </style>
-        <div class="movie_card" id="bright">
-            <div class="info_section">
-                <div class="movie_header">
 
-                    <h1>
+<link href="./bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
 
-                        @if (@c.Title.Length < 10)
-                        {
-                            <p>@c.Title.Substring(0, @c.Title.Length) </p>
-                        }
-                        else
-                        {
-                            <p>@c.Title.Substring(0, 10) ...</p>
-                        }
+<link rel="stylesheet" type="text/css" href="~/css/details.css">
+<link href="~/css/animate.css" rel="stylesheet" type="text/css" />
+<link href="~/css/fontawesome-all.css" rel="stylesheet" type="text/css" />
+<link href="~/css/magnific-popup.css" rel="stylesheet" type="text/css" />
+<link href="~/css/slick.css" rel="stylesheet" type="text/css" />
+<link href='https://fonts.googleapis.com/css?family=Oswald:300,400,500,700' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+<link href="~/css/dot-icons.css" rel="stylesheet" type="text/css">
+<link href="~/css/theme.css" rel="stylesheet" type="text/css">
 
-                    </h1>
-                    <h4>@Html.DisplayFor(modelItem => c.ReleasDate), @Html.DisplayFor(modelItem => c.Directors.name)</h4>
-                    <span class="minutes">@Html.DisplayFor(modelItem => c.Runtime)</span>
-                    <p class="type">
-                        Action
-                    </p>
-                </div>
-                <div class="movie_desc">
-                    <p class="text">
-                        @Html.DisplayFor(modelItem => c.Description)
 
-                    </p>
-                </div>
-
+<section class="after-head d-flex section-text-white position-relative">
+    <div class="d-background" data-image-src="http://via.placeholder.com/1920x1080" data-parallax="scroll"></div>
+    <div class="d-background bg-black-80"></div>
+    <div class="top-block top-inner container">
+        <div class="top-block-content">
+            <h1 class="section-title">Movies list</h1>
+            <div class="page-breadcrumbs">
+                <a class="content-link" asp-controller="Home" asp-action="Index">Home</a>
+                <span class="text-theme mx-2"><i class="fas fa-chevron-right"></i></span>
+                <span>Movies</span>
             </div>
-            <div class="blur_back bright_back-@c.Id"></div>
         </div>
+    </div>
+</section>
+<section class="section-long">
+    <div class="container">
+        <div class="section-pannel">
+            <div class="grid row">
+                <div class="col-md-2 my-md-auto d-flex">
+                    <span class="info-title d-md-none mr-3">Select view:</span>
+                    <ul class="ml-md-auto h5 list-inline">
+                        <li class="list-inline-item">
+                            <a class="btn btn-warning"  onclick="DeleteWholeHistory('@CurrentUser.getCurrentUser().Id')" href=""> Clear Whole history</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        @if (Model.Movies.Count > 0)
+        {
+            @foreach (Movie c in Model.Movies)
+            {
+                <article class="movie-line-entity">
+                    <div class="entity-poster" data-role="hover-wrap">
+                        <div class="embed-responsive embed-responsive-poster">
+                            <img class="embed-responsive-item" src="@c.Poster" alt="" />
+                        </div>
+                        <div class="d-over bg-theme-lighted collapse animated faster" data-show-class="fadeIn show" data-hide-class="fadeOut show">
+                            <div class="entity-play">
+                                <a class="action-icon-theme action-icon-bordered rounded-circle" href="@TheMovieDbUtilities.getLinkByName(c.Title)" data-magnific-popup="iframe">
+                                    <span class="icon-content"><i class="fas fa-play"></i></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="entity-content">
+                        <h4 class="entity-title">
+                            <form asp-controller="Home"
+                                  asp-action="ExistingMovieDetails" method="get">
+                                <input type="hidden" name="Id" value="@c.Id" />
+
+                                <button type="submit" class="content-link" style="border: none;background-color: Transparent;background-repeat: no-repeat;border: none; cursor: pointer;overflow: hidden;outline: none;">
+                                    @Html.DisplayFor(modelItem => c.Title)
+                                </button>
+
+                            </form>
+                        </h4>
+                        <div class="entity-category">
+                            @foreach (Genre g in MovieDbUtilities.GetGenres(c.Id))
+                            {
+                                <a class="content-link" href="movies-blocks.html"> @g.Name &nbsp;</a>
+                            }
+                        </div>
+                        <div class="entity-info">
+                            <div class="info-lines">
+                                <div class="info info-short">
+                                    <span class="text-theme info-icon"><i class="fas fa-star"></i></span>
+                                    <span class="info-text">@String.Format("{0:0.0}", c.AvgRating)</span>
+                                    <span class="info-rest">/10</span>
+                                </div>
+                                <div class="info info-short">
+                                    <span class="text-theme info-icon"><i class="fas fa-clock"></i></span>
+                                    <span class="info-text">@c.Runtime</span>
+
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-short entity-text">
+                            @Html.DisplayFor(modelItem => c.Description)
+                        </p>
+                    </div>
+                    <div class="entity-extra">
+
+
+                        <a href="" onclick="Delete('@c.Id')" class="btn btn-warning" style="width:100%; height:100%; ">
+
+
+                            <i class="fas fa-trash" style="font-size:40px; padding-top:50%"></i>
+
+
+                        </a>
+
+                    </div>
+                </article>
+            }
+        }
+        else
+        {
+            <h4 class="entity-title" style="position:center">
+               Oh , Your history is absolutly empty ! But you easily fix that , just start searching movies you which like)
+            </h4>
+        }
+    </div>
+</section>
+
+<script src="~/js/bootstrap/js/bootstrap.js"></script>
+
+<script src="~/js/parallax.js"></script>
+
+<script src="~/js/jquery.waypoints.min.js"></script>
+
+<script src="~/js/slick.min.js"></script>
+
+<script src="~/js/jquery.magnific-popup.min.js"></script>
+
+<script src="~/js/script.js"></script>
+<script async defer src="https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/js/rating.js"></script>
+
+<script>
+    $(function () {
+        $('#example1').DataTable();
+    });
+    function Delete(id){
+        var txt;
+        var r = confirm("Are you sure you want to Delete From history?");
+        if (r == true) {
+
+            $.ajax(
+            {
+                type: "POST",
+                url: '@Url.Action("DeleteHistoryMovie", "Home")',
+                data: {
+                    id: id
+                },
+                error: function (result) {
+                    alert("error");
+                },
+                success: function (result) {
+                    if (result == true) {
+                        var baseUrl="/Home/WatchList";
+                        window.location.reload();
+                    }
+                    else {
+                        alert("There is a problem, Try Later!");
+                    }
+                }
+            });
+        }
     }
-}
+    function DeleteWholeHistory(id){
+        var txt;
+        var r = confirm("Are you sure you want to Delete Whole Your Watched history?");
+        if (r == true) {
 
-else {
-
-
-<br>
-<br>
-<h1 class="alert alert-warning" style="position:center">Your Movie History is empty ! At first try to search some moveies you like ! </h1>
-
-}
-
-
-
+            $.ajax(
+            {
+                type: "POST",
+                url: '@Url.Action("DeleteWholeHistory", "Home")',
+                data: {
+                    id: id
+                },
+                error: function (result) {
+                    alert("error");
+                },
+                success: function (result) {
+                    if (result == true) {
+                        var baseUrl="/Home/WatchList";
+                        window.location.reload();
+                    }
+                    else {
+                        alert("There is a problem, Try Later!");
+                    }
+                }
+            });
+        }
+    }
+</script>
